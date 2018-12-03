@@ -1,0 +1,81 @@
+server:
+    port: 8087
+spring:
+    application:
+        name: pay-job-executor
+    datasource:
+      url: jdbc:mysql://47.106.102.4:3306/pay_customer?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowMultiQueries=true
+      username: pay_customer
+      password: pay_customer
+
+#eureka
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/
+  instance:
+    prefer-ip-address: true
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${server.port}}}
+    appname: pay-job-executor
+    status-page-url-path: /plat/monitor/info
+    health-check-url-path: /plat/monitor/health
+
+
+sys-params:
+  params:
+    digest-key: asdfghjhgfd
+        
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.psptio.**.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    #Sequence序列接口实现类配置
+    #key-generator: com.baomidou.mybatisplus.incrementer.OracleKeyGenerator
+    #逻辑删除配置
+    #logic-delete-value: -1
+    #logic-not-delete-value: 0
+    #自定义填充策略接口实现
+    meta-object-handler: com.psptio.base.fieldfill.BaseFieldFillHandler
+    #自定义SQL注入器
+    #sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  configuration:
+    #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+ 
+ #rocketmq
+rocketmq:
+ name-server: 127.0.0.1:9876
+ commonProducerGroup: exchange-order-common
+ transactionProducerGroup: exchange-order-transaction
+ producerSendMsgTimeout: 3000
+ producerCompressMsgBodyOverHowMuch: 4096
+ producerRetryTimesWhenSendFailed: 0
+ producerRetryAnotherBrokerWhenNotStoreOk: false
+ producerMaxMessageSize: 4194304 
+ 
+ # xxl-job
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    accessToken: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwYXktY3VzdG9tZXItc2VydmljZSIsImlhdCI6MTU0MzMxNzMxMX0.8E1WRn1D6xKjgx2m4MJZ3RwQW9tVbw-TpgUurPm0mutptlgX_uJOgmguV7rY5twLBC_ttbrFP08dYgOLlggHdQ
+    executor:
+      appname: pay-job-executor
+      ip:
+      port: 9997
+      logpath: ./logs/data/applogs/xxl-job/jobhandler
+      logretentiondays: -1               
